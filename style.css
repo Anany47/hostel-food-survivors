@@ -1,0 +1,148 @@
+/* University-themed colors */
+:root {
+  --university-primary: var(--bs-indigo);
+  --university-secondary: var(--bs-teal);
+  --university-accent: var(--bs-orange);
+}
+
+/* Custom styles for university food ordering system */
+.hero-section {
+  padding: 6rem 0;
+  background-color: var(--bs-dark);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                    url('https://cdn.pixabay.com/photo/2015/11/06/11/45/interior-1026452_1280.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.welcome-message {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Card animations */
+.featured-item, .menu-item-card {
+  transition: transform 0.3s, box-shadow 0.3s;
+  height: 100%;
+}
+
+.featured-item:hover, .menu-item-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.card.highlight {
+  box-shadow: 0 0 15px var(--bs-primary) !important;
+  transform: translateY(-5px);
+  transition: all 0.3s ease;
+}
+
+/* Menu items styling */
+.menu-item-img {
+  height: 180px;
+  object-fit: cover;
+}
+
+.vegetarian-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+}
+
+.promotion-tag {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+}
+
+/* Order items styling */
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--bs-gray-700);
+}
+
+/* Filter section styling */
+.filter-section {
+  background-color: var(--bs-dark);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+/* Section titles */
+.section-title {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 30px;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background-color: var(--university-accent);
+}
+
+/* Footer styling */
+.footer {
+  background-color: var(--bs-dark);
+  color: var(--bs-light);
+  padding: 40px 0;
+  margin-top: 50px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 4rem 0;
+  }
+  
+  .menu-item-img {
+    height: 160px;
+  }
+  
+  body {
+    padding-top: 56px; /* For fixed navbar */
+  }
+}
+/* Quantity controls */
+.quantity-control {
+  max-width: 120px;
+}
+
+.quantity-control .btn {
+  width: 30px;
+}
+
+/* Add button transitions */
+.add-to-order {
+  transition: all 0.3s ease;
+  min-width: 80px;
+}
+
+/* Order items styling */
+.order-item {
+  padding: 0.5rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+/* Category filter buttons */
+.btn-group .btn-outline-secondary.active {
+  background-color: #6c757d;
+  color: white;
+}
+
+/* Success state for add button */
+.btn-success {
+  background-color: #28a745 !important;
+  border-color: #28a745 !important;
+}

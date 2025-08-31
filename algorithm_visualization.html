@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Algorithm Visualization - Food Ordering System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .algorithm-card {
+        margin-bottom: 2rem;
+    }
+    
+    .algorithm-card .card-header {
+        font-weight: bold;
+    }
+    
+    .sorting-visualization .bar {
+        margin-right: 2px;
+        background-color: var(--bs-primary);
+        transition: height 0.3s ease;
+    }
+    
+    .knapsack-item {
+        padding: 8px;
+        margin: 5px;
+        border-radius: 4px;
+        display: inline-block;
+    }
+    
+    .knapsack-item.selected {
+        background-color: var(--bs-success);
+        color: white;
+    }
+    
+    .knapsack-item.not-selected {
+        background-color: var(--bs-secondary);
+        color: white;
+    }
+    
+    #capacity-container {
+        height: 20px;
+        background-color: var(--bs-gray-700);
+        margin-bottom: 10px;
+        border-radius: 4px;
+    }
+    
+    #capacity-fill {
+        height: 100%;
+        background-color: var(--bs-primary);
+        border-radius: 4px;
+        transition: width 0.5s ease;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Algorithm Visualization</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card algorithm-card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Order Sorting Algorithms</h4>
+                </div>
+                <div class="card-body">
+                    <p>Visualize different sorting algorithms to organize orders by various criteria.</p>
+                    
+                    <div class="mb-3">
+                        <label for="sorting-algorithm" class="form-label">Select Algorithm</label>
+                        <select id="sorting-algorithm" class="form-select">
+                            <option value="bubble">Bubble Sort</option>
+                            <option value="insertion">Insertion Sort</option>
+                            <option value="selection">Selection Sort</option>
+                            <option value="quick">Quick Sort</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="sorting-property" class="form-label">Sort By</label>
+                        <select id="sorting-property" class="form-select">
+                            <option value="price">Order Price</option>
+                            <option value="items">Number of Items</option>
+                            <option value="date">Order Date</option>
+                        </select>
+                    </div>
+                    
+                    <button id="run-sorting" class="btn btn-primary">Run Sorting</button>
+                    <button id="reset-sorting" class="btn btn-outline-secondary ms-2">Reset</button>
+                    
+                    <div class="mt-4">
+                        <h5>Visualization</h5>
+                        <div class="sorting-visualization d-flex align-items-end" style="height: 200px;"></div>
+                        
+                        <div class="mt-2" id="sorting-stats">
+                            <p><strong>Time Complexity:</strong> <span id="time-complexity">-</span></p>
+                            <p><strong>Space Complexity:</strong> <span id="space-complexity">-</span></p>
+                            <p><strong>Comparisons:</strong> <span id="comparison-count">0</span></p>
+                            <p><strong>Swaps:</strong> <span id="swap-count">0</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card algorithm-card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Knapsack Algorithm for Order Bundling</h4>
+                </div>
+                <div class="card-body">
+                    <p>Optimize delivery by selecting the best combination of orders to maximize value while respecting capacity constraints.</p>
+                    
+                    <div class="mb-3">
+                        <label for="knapsack-capacity" class="form-label">Delivery Capacity</label>
+                        <input type="range" class="form-range" id="knapsack-capacity" min="10" max="100" value="50">
+                        <div class="d-flex justify-content-between">
+                            <small>10</small>
+                            <small id="capacity-value">50</small>
+                            <small>100</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Select Orders to Optimize</label>
+                        <div class="order-selection" id="order-selection">
+                            <!-- Orders for selection will be populated here -->
+                            <div class="alert alert-info">Select orders from the list below to include in optimization.</div>
+                            {% if orders %}
+                                {% for order in orders %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="{{ order.id }}" id="order-{{ order.id }}">
+                                    <label class="form-check-label" for="order-{{ order.id }}">
+                                        Order #{{ order.id }} - ₹{{ "%.2f"|format(order.total_price) }} - {{ order.items_count }} items
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="alert alert-warning">No orders available for optimization.</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <button id="run-knapsack" class="btn btn-success">Run Optimization</button>
+                    
+                    <div class="mt-4">
+                        <h5>Results</h5>
+                        <div id="capacity-container">
+                            <div id="capacity-fill" style="width: 0%"></div>
+                        </div>
+                        <div id="knapsack-results">
+                            <p>Select orders and run the optimization to see results.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header bg-info text-white">
+            <h4 class="mb-0">Algorithm Explanation</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Sorting Algorithms</h5>
+                    <p>Sorting algorithms are used to arrange orders based on various criteria like price, time, or items count.</p>
+                    
+                    <h6>Bubble Sort</h6>
+                    <p>A simple comparison-based algorithm that repeatedly steps through the list, compares adjacent elements, and swaps them if needed.</p>
+                    <ul>
+                        <li>Time Complexity: O(n²)</li>
+                        <li>Space Complexity: O(1)</li>
+                    </ul>
+                    
+                    <h6>Insertion Sort</h6>
+                    <p>Builds the final sorted array one item at a time by shifting elements to make space.</p>
+                    <ul>
+                        <li>Time Complexity: O(n²)</li>
+                        <li>Space Complexity: O(1)</li>
+                    </ul>
+                    
+                    <h6>Selection Sort</h6>
+                    <p>Divides the input into a sorted and an unsorted region, repeatedly selects the smallest element and moves it to the sorted region.</p>
+                    <ul>
+                        <li>Time Complexity: O(n²)</li>
+                        <li>Space Complexity: O(1)</li>
+                    </ul>
+                    
+                    <h6>Quick Sort</h6>
+                    <p>Uses divide-and-conquer strategy with a pivot element to partition the array.</p>
+                    <ul>
+                        <li>Time Complexity: O(n log n) average case, O(n²) worst case</li>
+                        <li>Space Complexity: O(log n)</li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-6">
+                    <h5>Knapsack Algorithm</h5>
+                    <p>The 0/1 Knapsack Problem is a classic optimization problem used to find the most valuable combination of items within a capacity constraint.</p>
+                    
+                    <h6>Problem Statement</h6>
+                    <p>Given a set of orders with weights (number of items) and values (order prices), find the subset of orders that maximizes total value while keeping total weight under a capacity limit.</p>
+                    
+                    <h6>Dynamic Programming Solution</h6>
+                    <p>Our implementation uses dynamic programming with a time complexity of O(nW) where:</p>
+                    <ul>
+                        <li>n = number of orders</li>
+                        <li>W = capacity constraint</li>
+                    </ul>
+                    
+                    <h6>Applications in Food Delivery</h6>
+                    <p>The Knapsack algorithm can be used to optimize:</p>
+                    <ul>
+                        <li>Delivery bundling (maximizing value of orders delivered together)</li>
+                        <li>Efficient use of delivery capacity</li>
+                        <li>Balancing delivery time with order value</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/algorithms.js') }}"></script>
+{% endblock %}
